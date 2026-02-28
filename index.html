@@ -10,64 +10,28 @@
         body { font-family: sans-serif; text-align: center; background: #f0faff; color: #01579b; padding: 20px 10px; overflow: hidden; }
         h1 { font-size: 1.5rem; margin-bottom: 20px; }
         .card { background: white; margin: 15px auto; padding: 25px; border-radius: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 85%; cursor: pointer; }
-        
-        /* 画面切り替え */
         .view { display: none; height: 100vh; flex-direction: column; align-items: center; }
         .view.active { display: flex; }
-
-        /* バーのデザイン */
         .progress-outer { background: #eee; border-radius: 35px; height: 75px; width: 100%; margin: 25px 0; position: relative; display: flex; align-items: center; overflow: hidden; }
         .progress-inner { background: linear-gradient(90deg, #4caf50, #8bc34a); height: 100%; width: 0%; transition: width 0.8s ease-in-out; }
         .reward-row { position: absolute; width: 100%; display: flex; justify-content: space-around; padding: 0 10px; box-sizing: border-box; z-index: 5; }
-        
-        /* アイコン演出 */
-        .reward-item { 
-            font-size: 2.2rem; 
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            opacity: 0.3; 
-            filter: grayscale(100%); 
-            position: relative;
-            color: transparent; 
-        }
-        
-        .reward-item.hidden-icon::before { 
-            content: "❓"; 
-            position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            color: #01579b; opacity: 0.6; filter: grayscale(0%);
-            font-size: 1.6rem;
-        }
-        
-        .reward-item.revealed { 
-            opacity: 1; filter: grayscale(0%); transform: scale(1.2); color: initial; 
-        }
+        .reward-item { font-size: 2.2rem; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0.3; filter: grayscale(100%); position: relative; color: transparent; }
+        .reward-item.hidden-icon::before { content: "❓"; position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #01579b; opacity: 0.6; filter: grayscale(0%); font-size: 1.6rem; }
+        .reward-item.revealed { opacity: 1; filter: grayscale(0%); transform: scale(1.2); color: initial; }
         .reward-item.revealed::before { content: none; }
-
-        /* スタンプボタン */
         .stamp-btn { width: 180px; height: 180px; border-radius: 50%; border: none; color: white; font-size: 1.4rem; font-weight: bold; cursor: pointer; box-shadow: 0 8px #999; transition: 0.2s; }
         .btn-go { background: #ff9800; box-shadow: 0 8px #e65100; } 
         .btn-done { background: #4caf50; box-shadow: 0 8px #2e7d32; }
         .btn-wait { background: #9e9e9e; box-shadow: 0 8px #616161; opacity: 0.7; } 
-
         .back-btn { margin-top: auto; margin-bottom: 40px; background: none; border: 1px solid #ccc; padding: 10px 20px; border-radius: 10px; color: #666; }
-
-        /* 巨大アイコン演出 */
-        #big-icon-overlay {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            font-size: 180px; z-index: 300; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none; text-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
+        #big-icon-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 180px; z-index: 300; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; text-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         #big-icon-overlay.show { transform: translate(-50%, -50%) scale(1); }
-
-        /* 特殊演出・メッセージ */
         #special-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; color: white; }
         #msg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; font-size: 2.5rem; font-weight: bold; color: #ff5722; white-space: pre-wrap; }
     </style>
 </head>
 <body>
-
     <div id="big-icon-overlay"></div>
-
     <div id="view-top" class="view active">
         <h1>はるおかスイミングクエスト</h1>
         <div class="card" onclick="openPlayer('はるちゃん', '🐱')">
@@ -79,7 +43,6 @@
             <div style="font-size: 1.8rem; font-weight: bold;">なぎちゃん</div>
         </div>
     </div>
-
     <div id="view-player" class="view">
         <h1 id="player-title"></h1>
         <div class="card" style="cursor: default; width: 90%;">
@@ -91,13 +54,11 @@
         </div>
         <button class="back-btn" onclick="backToTop()">⬅️ もどる</button>
     </div>
-
     <div id="special-overlay">
         <div style="font-size: 8rem; animation: shake 0.5s infinite;">🎁</div>
         <div id="special-msg" style="margin-top:20px; text-align:center; font-size: 1.5rem;"></div>
         <button onclick="closeSpecial()" style="margin-top:30px; padding:15px 30px; border-radius:15px; border:none; background:#ff4081; color:white;">とじる</button>
     </div>
-
     <div id="msg-overlay">
         <div id="msg-text"></div>
         <button onclick="closeMsg()" style="padding:10px 20px; background:#01579b; color:white; border:none; border-radius:10px;">とじる</button>
@@ -108,11 +69,6 @@
         const S_KEY = 'sb_publishable_8l_8N87rTTt5yu6isquAGg_cEOmsWZQ';
         const sb = supabase.createClient(S_URL, S_KEY);
 
-        // 各プレイヤーの独立した状態管理
-        let playerStates = {
-            "はるちゃん": { step: 0 },
-            "なぎちゃん": { step: 0 }
-        };
         let currentPlayer = { name: '', icon: '' };
 
         function backToTop() {
@@ -123,7 +79,6 @@
         async function openPlayer(name, icon) {
             currentPlayer = { name, icon };
             document.getElementById('player-title').innerText = icon + " " + name;
-            
             const row = document.getElementById('player-row');
             row.innerHTML = '';
             for (let i = 1; i <= 10; i++) {
@@ -133,26 +88,31 @@
                 s.id = 'slot-' + i;
                 row.appendChild(s);
             }
-
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('view-player').classList.add('active');
-            
             await loadPlayerData();
         }
 
         async function loadPlayerData() {
-            const today = new Date();
-            const isSaturday = today.getDay() === 6;
+            const today = new Date().toDateString();
+            const isSaturday = new Date().getDay() === 6;
 
-            const { data, count, error } = await sb.from('swimming_logs')
-                .select('*', { count: 'exact' })
+            // 最新の1件を取得して今日の状態を判定
+            const { data, error } = await sb.from('swimming_logs')
+                .select('*')
                 .eq('child_name', currentPlayer.name)
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            // 全体のスタンプ数を取得
+            const { count } = await sb.from('swimming_logs')
+                .select('*', { count: 'exact', head: true })
+                .eq('child_name', currentPlayer.name)
+                .eq('status', 0); // 完了したスタンプのみカウント
 
             if (!error) {
                 const cur = count % 11;
                 document.getElementById('player-bar').style.width = (cur * 10) + '%';
-                
                 for (let i = 1; i <= 10; i++) {
                     const el = document.getElementById('slot-' + i);
                     if (el) {
@@ -161,13 +121,17 @@
                     }
                 }
 
-                const hasStampedToday = data && data.length > 0 && new Date(data[0].created_at).toDateString() === today.toDateString();
-                
-                if (hasStampedToday) {
-                    setBtn(2); // 完了済
-                } else if (isSaturday) {
-                    const savedStep = playerStates[currentPlayer.name].step;
-                    setBtn(savedStep === 1 ? 1 : 0); // 「いってきます」済みなら「がんばった」を維持
+                const lastLog = data[0];
+                const lastDate = lastLog ? new Date(lastLog.created_at).toDateString() : null;
+
+                if (isSaturday) {
+                    if (lastDate === today && lastLog.status === 1) {
+                        setBtn(1); // 他の端末で「いってきます」済み
+                    } else if (lastDate === today && lastLog.status === 0) {
+                        setBtn(2); // 今日は完了
+                    } else {
+                        setBtn(0); // 未開始
+                    }
                 } else {
                     setBtn(2); // 土曜以外
                 }
@@ -175,50 +139,58 @@
         }
 
         function setBtn(step) {
-            playerStates[currentPlayer.name].step = step;
             const btn = document.getElementById('player-btn');
-            btn.onclick = () => handleAction();
+            btn.onclick = () => handleAction(step);
             if (step === 0) { btn.innerText = "いってきます！"; btn.className = "stamp-btn btn-go"; btn.disabled = false; }
             else if (step === 1) { btn.innerText = "がんばった！"; btn.className = "stamp-btn btn-done"; btn.disabled = false; }
             else { btn.innerText = "また来週！"; btn.className = "stamp-btn btn-wait"; btn.disabled = true; }
         }
 
-        function handleAction() {
-            const name = currentPlayer.name;
-            if (playerStates[name].step === 0) {
-                document.getElementById('msg-overlay').style.display = 'flex';
-                document.getElementById('msg-text').innerText = name + "\nがんばれー！📣";
-                setBtn(1);
-            } else if (playerStates[name].step === 1) {
-                submitStamp();
+        async function handleAction(currentStep) {
+            if (currentStep === 0) {
+                // DBに「いってきます(status:1)」を登録
+                const { error } = await sb.from('swimming_logs').insert([{ child_name: currentPlayer.name, status: 1 }]);
+                if (!error) {
+                    document.getElementById('msg-overlay').style.display = 'flex';
+                    document.getElementById('msg-text').innerText = currentPlayer.name + "\nがんばれー！📣";
+                    await loadPlayerData();
+                }
+            } else if (currentStep === 1) {
+                submitFinalStamp();
             }
         }
 
-        async function submitStamp() {
-            const { count: beforeCount } = await sb.from('swimming_logs').select('*', { head: true, count: 'exact' }).eq('child_name', currentPlayer.name);
-            const nextIndex = (beforeCount % 10) + 1;
-            const rewardIcon = (nextIndex === 5 || nextIndex === 10) ? '🎁' : '🍦';
+        async function submitFinalStamp() {
+            // 今日の「いってきます」ログを探して status を 0 に更新
+            const today = new Date().toISOString().split('T')[0];
+            const { data } = await sb.from('swimming_logs')
+                .select('id')
+                .eq('child_name', currentPlayer.name)
+                .eq('status', 1)
+                .gte('created_at', today)
+                .limit(1);
 
-            const overlay = document.getElementById('big-icon-overlay');
-            overlay.innerText = rewardIcon;
-            overlay.classList.add('show');
-
-            new Audio('https://re-creation.jp/wp-content/uploads/2021/03/success.mp3').play();
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            
-            const { error } = await sb.from('swimming_logs').insert([{ child_name: currentPlayer.name }]);
-            
-            setTimeout(async () => {
-                overlay.classList.remove('show');
+            if (data && data.length > 0) {
+                const { error } = await sb.from('swimming_logs').update({ status: 0 }).eq('id', data[0].id);
                 if (!error) {
-                    const { count: afterCount } = await sb.from('swimming_logs').select('*', { head: true, count: 'exact' }).eq('child_name', currentPlayer.name);
-                    if (afterCount > 0 && afterCount % 10 === 0) {
-                        showSpecial();
-                    } else {
-                        await loadPlayerData();
-                    }
+                    // 演出
+                    const { count } = await sb.from('swimming_logs').select('*', { head: true, count: 'exact' }).eq('child_name', currentPlayer.name).eq('status', 0);
+                    const nextIndex = ((count - 1) % 10) + 1;
+                    const rewardIcon = (nextIndex === 5 || nextIndex === 10) ? '🎁' : '🍦';
+
+                    const overlay = document.getElementById('big-icon-overlay');
+                    overlay.innerText = rewardIcon;
+                    overlay.classList.add('show');
+                    new Audio('https://re-creation.jp/wp-content/uploads/2021/03/success.mp3').play();
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+
+                    setTimeout(async () => {
+                        overlay.classList.remove('show');
+                        if (count > 0 && count % 10 === 0) showSpecial();
+                        else await loadPlayerData();
+                    }, 1200);
                 }
-            }, 1200);
+            }
         }
 
         function showSpecial() {
@@ -226,7 +198,6 @@
             document.getElementById('special-msg').innerText = currentPlayer.name + "ちゃん\n10回達成おめでとう！！🎉\nパパにご褒美をもらおう！";
             confetti({ particleCount: 300, spread: 100, origin: { y: 0.3 } });
         }
-
         function closeSpecial() { document.getElementById('special-overlay').style.display = 'none'; loadPlayerData(); }
         function closeMsg() { document.getElementById('msg-overlay').style.display = 'none'; }
     </script>

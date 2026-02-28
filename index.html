@@ -16,18 +16,18 @@
         .view.active { display: flex; }
 
         /* バーのデザイン */
-        .progress-outer { background: #eee; border-radius: 30px; height: 70px; width: 100%; margin: 25px 0; position: relative; display: flex; align-items: center; overflow: hidden; }
+        .progress-outer { background: #eee; border-radius: 35px; height: 75px; width: 100%; margin: 25px 0; position: relative; display: flex; align-items: center; overflow: hidden; }
         .progress-inner { background: linear-gradient(90deg, #4caf50, #8bc34a); height: 100%; width: 0%; transition: width 0.8s ease-in-out; }
         .reward-row { position: absolute; width: 100%; display: flex; justify-content: space-around; padding: 0 10px; box-sizing: border-box; z-index: 5; }
         
-        /* アイコン演出の修正 */
+        /* アイコン演出 */
         .reward-item { 
-            font-size: 2rem; /* バー内のアイコンを大きく */
+            font-size: 2.2rem; 
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             opacity: 0.3; 
             filter: grayscale(100%); 
             position: relative;
-            color: transparent; /* 達成前は中身を隠す */
+            color: transparent; 
         }
         
         .reward-item.hidden-icon::before { 
@@ -35,7 +35,7 @@
             position: absolute; left: 0; top: 0; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
             color: #01579b; opacity: 0.6; filter: grayscale(0%);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
         }
         
         .reward-item.revealed { 
@@ -59,7 +59,7 @@
         }
         #big-icon-overlay.show { transform: translate(-50%, -50%) scale(1); }
 
-        /* 各種オーバーレイ */
+        /* 特殊演出・メッセージ */
         #special-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; color: white; }
         #msg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; font-size: 2.5rem; font-weight: bold; color: #ff5722; white-space: pre-wrap; }
     </style>
@@ -108,7 +108,12 @@
         const S_KEY = 'sb_publishable_8l_8N87rTTt5yu6isquAGg_cEOmsWZQ';
         const sb = supabase.createClient(S_URL, S_KEY);
 
-        let currentPlayer = { name: '', icon: '', step: 0 };
+        // 各プレイヤーの独立した状態管理
+        let playerStates = {
+            "はるちゃん": { step: 0 },
+            "なぎちゃん": { step: 0 }
+        };
+        let currentPlayer = { name: '', icon: '' };
 
         function backToTop() {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -116,7 +121,7 @@
         }
 
         async function openPlayer(name, icon) {
-            currentPlayer = { name, icon, step: 0 };
+            currentPlayer = { name, icon };
             document.getElementById('player-title').innerText = icon + " " + name;
             
             const row = document.getElementById('player-row');
@@ -156,18 +161,21 @@
                     }
                 }
 
-                if (data && data.length > 0 && new Date(data[0].created_at).toDateString() === today.toDateString()) {
-                    setBtn(2);
+                const hasStampedToday = data && data.length > 0 && new Date(data[0].created_at).toDateString() === today.toDateString();
+                
+                if (hasStampedToday) {
+                    setBtn(2); // 完了済
                 } else if (isSaturday) {
-                    setBtn(0);
+                    const savedStep = playerStates[currentPlayer.name].step;
+                    setBtn(savedStep === 1 ? 1 : 0); // 「いってきます」済みなら「がんばった」を維持
                 } else {
-                    setBtn(2);
+                    setBtn(2); // 土曜以外
                 }
             }
         }
 
         function setBtn(step) {
-            currentPlayer.step = step;
+            playerStates[currentPlayer.name].step = step;
             const btn = document.getElementById('player-btn');
             btn.onclick = () => handleAction();
             if (step === 0) { btn.innerText = "いってきます！"; btn.className = "stamp-btn btn-go"; btn.disabled = false; }
@@ -176,22 +184,21 @@
         }
 
         function handleAction() {
-            if (currentPlayer.step === 0) {
+            const name = currentPlayer.name;
+            if (playerStates[name].step === 0) {
                 document.getElementById('msg-overlay').style.display = 'flex';
-                document.getElementById('msg-text').innerText = currentPlayer.name + "\nがんばれー！📣";
+                document.getElementById('msg-text').innerText = name + "\nがんばれー！📣";
                 setBtn(1);
-            } else if (currentPlayer.step === 1) {
+            } else if (playerStates[name].step === 1) {
                 submitStamp();
             }
         }
 
         async function submitStamp() {
-            // 現在のカウントを取得して、次に出るアイコンを判定
             const { count: beforeCount } = await sb.from('swimming_logs').select('*', { head: true, count: 'exact' }).eq('child_name', currentPlayer.name);
             const nextIndex = (beforeCount % 10) + 1;
             const rewardIcon = (nextIndex === 5 || nextIndex === 10) ? '🎁' : '🍦';
 
-            // 巨大アイコン表示演出
             const overlay = document.getElementById('big-icon-overlay');
             overlay.innerText = rewardIcon;
             overlay.classList.add('show');

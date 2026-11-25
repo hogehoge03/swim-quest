@@ -1,0 +1,9 @@
+{
+  "name": "hanafuda-koikoi",
+  "private": true,
+  "description": "スマホで遊べる花札こいこい（CPU対戦）",
+  "scripts": {
+    "test": "node --test test/engine.test.js test/simulation.test.js",
+    "e2e": "node test/e2e.js"
+  }
+}
